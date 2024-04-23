@@ -1,0 +1,525 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium.webdriver.common.action_chains import ActionChains
+import concurrent.futures
+from concurrent.futures import ThreadPoolExecutor
+import requests
+from dotenv import load_dotenv
+from bs4 import BeautifulSoup
+import logging
+import time
+import pandas as pd
+import os
+import xlsxwriter
+import sys
+
+# Create a requirements.txt file
+with open('requirements.txt', 'w') as f:
+    f.write('selenium==3.141.0\n')
+    f.write('pandas==1.3.3\n')
+    f.write('webdriver-manager==3.4.2\n')
+    f.write('bs4==0.0.2\n')
+    f.write('xlsxwriter==3.2.0\n')
+    f.write('openpyxl==3.1.2\n')
+
+# Load secret .env file
+load_dotenv()
+
+print("Current Working Directory", os.getcwd())
+
+tmp_dir = os.getenv('TMP')
+print("Temporary directory:", tmp_dir)
+
+# Set the PATH environment variable to the directory containing chromedriver
+os.environ["PATH"] += os.pathsep + "Kirby_Chromediver"
+
+# Define the directory to save Excel files
+excel_directory = "C:\\Users\\kirby\\OneDrive\\Desktop\\NBA\\NBA_2023"
+
+# Start URL
+start_url = os.getenv('Scrape_URL')
+
+# List of teams
+teams = ["ATL", "BOS", "BRK", "CHO", "CHI", "CLE", "DAL", "DEN", "DET", "GSW", "HOU", "IND", "LAC", "LAL", "MEM",
+         "MIA", "MIL", "MIN", "NOP", "NYK", "OKC", "ORL", "PHI", "PHO", "POR", "SAC", "SAS", "TOR", "UTA", "WAS"]
+
+# List of Pages to scrape through
+page_names = ["Roster & Stats", "Starting Lineups", "Splits", "Game Log", "Schedule & Results"]
+
+# Create a directory for each team to store their respective Excel files
+team_excel_directories = {team: os.path.join(excel_directory, team) for team in teams}
+
+# Create directories if they don't exist
+for team_directory in team_excel_directories.values():
+    os.makedirs(team_directory, exist_ok=True)
+
+# URL Template for each page
+page_url_template = {
+    "Roster & Stats": '{start}/teams/{link}/2023.html',
+    "Starting Lineups": '{start}/teams/{link}/2023_start.html',
+    "Splits": '{start}/teams/{link}/2023/splits/',
+    "Game Log": '{start}/teams/{link}/2023/gamelog/',
+    "Schedule & Results": '{start}/teams/{link}/2023_games.html'
+}
+
+# Initialize the team_url dictionary
+team_url = {}
+for team in teams:
+    team_url[team] = {}
+    for page in page_names:
+        url_template = page_url_template[page]
+        team_url[team][page] = url_template.format(start=start_url, link=team)
+
+# Define the list of table IDs to scrape for each page
+table_ids = {
+    "Roster & Stats": ['roster', 'per_game', 'totals'],
+    "Starting Lineups": ['starting_lineups_po0'],
+    "Splits": ['team_splits'],
+    "Game Log": ['tgl_basic'],
+    "Schedule & Results": ['games']
+}
+
+# Print the generated team URLs
+print(team_url)
+
+# Example of how to access a specific team's URL for a specific page
+print(team_url["CHI"]["Splits"])
+
+# Example of how to access the table IDs for a specific page
+print(table_ids["Splits"])
+
+# Define a dictionary where keys are table IDs and values are column names
+column_names_dict = {
+    'roster': ['Player', 'Position', 'Height', 'Weight', 'BirthDate', 'BirthCountry', 'Experience', 'College'],
+    'per_game': ['Player', 'Age', 'GamesPlayedPerGame', 'GamesStarted', 'MinutesPlayedPerGame', 'FieldGoalsPerGame',
+                 'FieldGoalAttemptsPerGame', 'FieldGoalPercentPerGame', 'ThreePointFieldGoalsPerGame', 'ThreePointFieldGoalAttemptsPerGame',
+                 'ThreePointFieldGoalPercentPerGame', 'TwoPointFieldGoalsPerGame', 'TwoPointFieldGoalAttemptsPerGame', 'TwoPointFieldGoalPercentPerGame',
+                 'EffectiveFieldGoalPercentPerGame', 'FreeThrowsPerGame', 'FreeThrowAttemptsPerGame', 'FreeThrowPercentPerGame',
+                 'OffensiveReboundsPerGame', 'DefensiveReboundsPerGame', 'TotalReboundsPerGame', 'AssistsPerGame', 'StealsPerGame', 'BlocksPerGame',
+                 'TurnoversPerGame', 'PersonalFoulsPerGame', 'PointsPerGame'],
+    'totals': ['Player', 'Age', 'TotalGamesPlayed', 'TotalGamesStarted', 'TotalMinutesPlayed', 'TotalFieldGoalsPerGame',
+               'TotalFieldGoalAttempts', 'TotalFieldGoalPercent', 'TotalThreePointFieldGoalsPerGame',
+               'TotalThreePointFieldGoalAttempts', 'TotalThreePointFieldGoalPercent', 'TotalTwoPointFieldGoalsPerGame',
+               'TotalTwoPointFieldGoalAttempts', 'TotalTwoPointFieldGoalPercent',
+               'TotalEffectiveFieldGoalPercent', 'TotalFreeThrows', 'TotalFreeThrowAttempts', 'TotalFreeThrowPercent',
+               'TotalOffensiveRebounds', 'TotalDefensiveRebounds', 'TotalRebounds', 'TotalAssists', 'TotalSteals', 'TotalBlocks', 'TotalTurnovers',
+               'TotalPersonalFouls', 'TotalPoints'],
+    'starting_lineups_po0': ['Date', 'Start(ET)', '_', 'BoxScore', 'HomeAway', 'Opponent', 'WinLoss', 'Overtime',
+                             'TeamPoints', 'OpponentPoints', 'Wins', 'Losses', 'StartingLineup'],
+    'team_splits': ['Value', 'Games', 'Wins', 'Losses', 'FieldGoals', 'FieldGoalAttempts', 'ThreePoints',
+                    'ThreePointAttempts', 'FreeThrows', 'FreeThrowAttempts', 'OffensiveRebounds', 'TotalRebounds',
+                    'Assists', 'Steals', 'Blocks', 'Turnovers', 'PersonalFouls', 'Points', 'FieldGoalPercent', 'ThreePointPercent',
+                    'EffectiveFieldGoalPercent', 'FreeThrowPercent', 'TSPercent', 'OppFieldGoals', 'OppFieldGoalAttempts', 'OppThreePoints',
+                    'OppThreePointAttempts', 'OppFreeThrows', 'OppFreeThrowAttempts', 'OppOffensiveRebounds', 'OppTotalRebounds',
+                    'OppAssists', 'OppSteals', 'OppBlocks', 'OppTurnovers', 'OppPersonalFouls', 'OppPoints', 'OppFieldGoalPercent', 'OppThreePointPercent',
+                    'OppEffectiveFieldGoalPercent', 'OppFreeThrowPercent', 'OppTSPercent'],
+    'tgl_basic': ['_1', 'Date', 'HomeAway', 'Opp', 'WinLoss', 'Points', 'OppPoints', 'FieldGoals', 'FieldGoalAttempts',
+                  'FieldGoalPercent', 'ThreePoints', 'ThreePointAttempts', 'ThreePointPercent', 'FreeThrows', 'FreeThrowAttempts',
+                  'FreeThrowPercent', 'OffensiveRebounds', 'TotalRebounds', 'Assists', 'Steals', 'Blocks', 'Turnovers',
+                  'PersonalFouls', '_2', 'OppFieldGoals', 'OppFieldGoalAttempts', 'OppFieldGoalPercent', 'OppThreePoints',
+                  'OppThreePointAttempts', 'OppThreePointPercent', 'OppFreeThrows', 'OppFreeThrowAttempts', 'OppFreeThrowPercent',
+                  'OppOffensiveRebounds', 'OppTotalRebounds', 'OppAssists', 'OppSteals', 'OppBlocks', 'OppTurnovers', 'OppPersonalFouls'],
+    'games': ['Date', 'Start(ET)', '_', 'BoxScore', 'HomeAway', 'Opponent', 'Winloss', 'Overtime', 'Points', 'OppPoints', 'Wins', 'Losses', 'Streak', 'Notes']
+}
+
+# Chrome options
+chrome_options = Options()
+chrome_options.add_argument("--disable-extensions")
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--no-sandbox")  # required for certain environments
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--disable-features=VizDisplayCompositor")
+chrome_options.add_argument("--disable-setuid-sandbox")
+chrome_options.add_argument("--block-new-web-contents")  # Block new web contents
+
+prefs = {
+    "profile.managed_default_content_settings.images": 2,
+    "profile.managed_default_content_settings.javascript": 2,
+    "profile.managed_default_content_settings.css": 2,
+}
+chrome_options.add_experimental_option("prefs", prefs)
+
+# Open the webdriver
+driver = webdriver.Chrome(options=chrome_options)
+
+# Increase timeout duration
+wait = WebDriverWait(driver, 5)  # Increased from 10 to 30 seconds/
+
+# Initialize logging
+logging.basicConfig(filename='scraping_log.txt', level=logging.ERROR)
+
+# Define a function to scrape data for a single team
+def scrape_team_data(team_url_value, team_name, table_ids):
+    try:
+        driver.get(team_url_value)  # Updated variable name to team_url_value
+        team_data = {}
+        # Scrape data for each table ID
+        for table_id in table_ids:
+            table_data = []
+            table = wait.until(EC.presence_of_element_located((By.ID, table_id)))
+            rows = table.find_elements(By.TAG_NAME, 'tr')
+            for row in rows[1:]:  # Skip the header row
+                cells = row.find_elements(By.TAG_NAME, 'td')
+                row_data = [cell.text.strip() for cell in cells]
+                table_data.append(row_data)
+            # Get the column names from the column_names_dict
+            table_columns = column_names_dict.get(table_id, [])
+            table_df = pd.DataFrame(table_data, columns=table_columns)
+            # Clean and format dataframe based on table_id
+            if table_id == 'roster':
+                table_df = clean_and_format_dataframe_roster(table_df)
+            elif table_id == 'per_game':
+                table_df = clean_and_format_dataframe_per_game(table_df)
+            elif table_id == 'totals':
+                table_df = clean_and_format_dataframe_totals(table_df)
+            elif table_id == 'team_and_opponent':
+                table_df = clean_and_format_dataframe_team_and_opponent(table_df)
+            elif table_id == 'team_splits':
+                table_df = clean_and_format_dataframe_team_splits(table_df)
+            elif table_id == 'tgl_basic':
+                table_df = clean_and_format_dataframe_tgl_basic(table_df)
+            elif table_id == 'games':
+                table_df = clean_and_format_dataframe_games(table_df)
+            team_data[table_id] = table_df
+            print(f"\n{table_id.capitalize().replace('_', ' ')}:")
+            print(table_df)
+            write_dataframes_to_excel({table_id: table_df}, team_name)
+        return team_data
+
+        # Check if injuries table was successfully scraped, if not, create an empty DataFrame
+        if 'injuries' not in team_data:
+            injuries_columns = column_names_dict.get('injuries', [])
+            injuries_df = pd.DataFrame(columns=injuries_columns)
+            team_data['injuries'] = injuries_df
+
+    except NoSuchElementException as e:
+        logging.error(f"Element not found while scraping data for team {team_name}: {e}")
+        return None
+    except TimeoutException as e:
+        logging.error(f"Timeout while waiting for element while scraping data for team {team_name}: {e}")
+        return None
+    except Exception as e:
+        logging.error(f"Error scraping data for team {team_name}: {e}")
+        return None
+# Define function to clean and format dataframes
+def clean_and_format_dataframe_roster(df):
+    # Convert columns to appropriate data types
+    df['BirthDate'] = pd.to_datetime(df['BirthDate'])
+    df['Weight'] = pd.to_numeric(df['Weight'], errors='coerce')
+
+    # Clean strings: Remove leading and trailing whitespaces
+    df['Player'] = df['Player'].str.strip()
+    df['BirthCountry'] = df['BirthCountry'].str.strip()
+
+    # Convert string columns to lowercase
+    df['Position'] = df['Position'].str.lower()
+    df['College'] = df['College'].str.lower()
+
+    # Drop unnecessary columns
+    df.drop(columns=['Experience'], inplace=True)
+
+    return df
+
+# Define function to clean and format dataframes
+def clean_and_format_dataframe_per_game(df):
+    # Convert columns to appropriate data types
+    df['Age'] = pd.to_numeric(df['Age'], errors='coerce')
+    df['GamesStarted'] = pd.to_numeric(df['GamesStarted'], errors='coerce')
+    df['MinutesPlayedPerGame'] = pd.to_numeric(df['MinutesPlayedPerGame'], errors='coerce')
+    df['FieldGoalsPerGame'] = pd.to_numeric(df['FieldGoalsPerGame'], errors='coerce')
+    df['FieldGoalAttemptsPerGame'] = pd.to_numeric(df['FieldGoalAttemptsPerGame'], errors='coerce')
+    df['FieldGoalPercentPerGame'] = pd.to_numeric(df['FieldGoalPercentPerGame'], errors='coerce')
+    df['ThreePointFieldGoalsPerGame'] = pd.to_numeric(df['ThreePointFieldGoalsPerGame'], errors='coerce')
+    df['ThreePointFieldGoalAttemptsPerGame'] = pd.to_numeric(df['ThreePointFieldGoalAttemptsPerGame'], errors='coerce')
+    df['ThreePointFieldGoalPercentPerGame'] = pd.to_numeric(df['ThreePointFieldGoalPercentPerGame'], errors='coerce')
+    df['TwoPointFieldGoalsPerGame'] = pd.to_numeric(df['TwoPointFieldGoalsPerGame'], errors='coerce')
+    df['TwoPointFieldGoalAttemptsPerGame'] = pd.to_numeric(df['TwoPointFieldGoalAttemptsPerGame'], errors='coerce')
+    df['TwoPointFieldGoalPercentPerGame'] = pd.to_numeric(df['TwoPointFieldGoalPercentPerGame'], errors='coerce')
+    df['EffectiveFieldGoalPercentPerGame'] = pd.to_numeric(df['EffectiveFieldGoalPercentPerGame'], errors='coerce')
+    df['FreeThrowsPerGame'] = pd.to_numeric(df['FreeThrowsPerGame'], errors='coerce')
+    df['FreeThrowAttemptsPerGame'] = pd.to_numeric(df['FreeThrowAttemptsPerGame'], errors='coerce')
+    df['FreeThrowPercentPerGame'] = pd.to_numeric(df['FreeThrowPercentPerGame'], errors='coerce')
+    df['OffensiveReboundsPerGame'] = pd.to_numeric(df['OffensiveReboundsPerGame'], errors='coerce')
+    df['DefensiveReboundsPerGame'] = pd.to_numeric(df['DefensiveReboundsPerGame'], errors='coerce')
+    df['TotalReboundsPerGame'] = pd.to_numeric(df['TotalReboundsPerGame'], errors='coerce')
+    df['AssistsPerGame'] = pd.to_numeric(df['AssistsPerGame'], errors='coerce')
+    df['StealsPerGame'] = pd.to_numeric(df['StealsPerGame'], errors='coerce')
+    df['BlocksPerGame'] = pd.to_numeric(df['BlocksPerGame'], errors='coerce')
+    df['TurnoversPerGame'] = pd.to_numeric(df['TurnoversPerGame'], errors='coerce')
+    df['PersonalFoulsPerGame'] = pd.to_numeric(df['PersonalFoulsPerGame'], errors='coerce')
+    df['PointsPerGame'] = pd.to_numeric(df['PointsPerGame'], errors='coerce')
+
+    # Clean strings: Remove leading and trailing whitespaces
+    df['Player'] = df['Player'].str.strip()
+
+    # Convert string columns to lowercase
+    df['Player'] = df['Player'].str.lower()
+
+    return df
+
+# Define function to clean and format dataframes
+def clean_and_format_dataframe_totals(df):
+    # Convert columns to appropriate data types
+    df['Age'] = pd.to_numeric(df['Age'], errors='coerce')
+    df['TotalGamesPlayed'] = pd.to_numeric(df['TotalGamesPlayed'], errors='coerce')
+    df['TotalGamesStarted'] = pd.to_numeric(df['TotalGamesStarted'], errors='coerce')
+    df['TotalMinutesPlayed'] = pd.to_numeric(df['TotalMinutesPlayed'], errors='coerce')
+    df['TotalFieldGoalsPerGame'] = pd.to_numeric(df['TotalFieldGoalsPerGame'], errors='coerce')
+    df['TotalFieldGoalAttempts'] = pd.to_numeric(df['TotalFieldGoalAttempts'], errors='coerce')
+    df['TotalFieldGoalPercent'] = pd.to_numeric(df['TotalFieldGoalPercent'], errors='coerce')
+    df['TotalThreePointFieldGoalsPerGame'] = pd.to_numeric(df['TotalThreePointFieldGoalsPerGame'], errors='coerce')
+    df['TotalThreePointFieldGoalAttempts'] = pd.to_numeric(df['TotalThreePointFieldGoalAttempts'], errors='coerce')
+    df['TotalThreePointFieldGoalPercent'] = pd.to_numeric(df['TotalThreePointFieldGoalPercent'], errors='coerce')
+    df['TotalTwoPointFieldGoalsPerGame'] = pd.to_numeric(df['TotalTwoPointFieldGoalsPerGame'], errors='coerce')
+    df['TotalTwoPointFieldGoalAttempts'] = pd.to_numeric(df['TotalTwoPointFieldGoalAttempts'], errors='coerce')
+    df['TotalTwoPointFieldGoalPercent'] = pd.to_numeric(df['TotalTwoPointFieldGoalPercent'], errors='coerce')
+    df['TotalEffectiveFieldGoalPercent'] = pd.to_numeric(df['TotalEffectiveFieldGoalPercent'], errors='coerce')
+    df['TotalFreeThrows'] = pd.to_numeric(df['TotalFreeThrows'], errors='coerce')
+    df['TotalFreeThrowAttempts'] = pd.to_numeric(df['TotalFreeThrowAttempts'], errors='coerce')
+    df['TotalFreeThrowPercent'] = pd.to_numeric(df['TotalFreeThrowPercent'], errors='coerce')
+    df['TotalOffensiveRebounds'] = pd.to_numeric(df['TotalOffensiveRebounds'], errors='coerce')
+    df['TotalDefensiveRebounds'] = pd.to_numeric(df['TotalDefensiveRebounds'], errors='coerce')
+    df['TotalRebounds'] = pd.to_numeric(df['TotalRebounds'], errors='coerce')
+    df['TotalAssists'] = pd.to_numeric(df['TotalAssists'], errors='coerce')
+    df['TotalSteals'] = pd.to_numeric(df['TotalSteals'], errors='coerce')
+    df['TotalBlocks'] = pd.to_numeric(df['TotalBlocks'], errors='coerce')
+    df['TotalTurnovers'] = pd.to_numeric(df['TotalTurnovers'], errors='coerce')
+    df['TotalPersonalFouls'] = pd.to_numeric(df['TotalPersonalFouls'], errors='coerce')
+    df['TotalPoints'] = pd.to_numeric(df['TotalPoints'], errors='coerce')
+
+    # Clean strings: Remove leading and trailing whitespaces
+    df['Player'] = df['Player'].str.strip()
+
+    # Convert string columns to lowercase
+    df['Player'] = df['Player'].str.lower()
+
+    return df
+
+# Define function to clean and format dataframes
+def clean_and_format_dataframe_starting_lineups_po0(df):
+    # Convert columns to appropriate data types
+    df['Date'] = pd.to_datetime(df['Date'])
+    df['TeamPoints'] = pd.to_numeric(df['TeamPoints'], errors='coerce')
+    df['OpponentPoints'] = pd.to_numeric(df['OpponentPoints'], errors='coerce')
+    df['Wins'] = pd.to_numeric(df['Wins'], errors='coerce')
+    df['Losses'] = pd.to_numeric(df['Losses'], errors='coerce')
+
+    # Clean strings: Remove leading and trailing whitespaces
+    df['Opponent'] = df['Opponent'].str.strip()
+    df['StartingLineup'] = df['StartingLineup'].str.strip()
+
+    # Convert string columns to lowercase
+    df['Opponent'] = df['Opponent'].str.lower()
+    df['StartingLineup'] = df['StartingLineup'].str.lower()
+
+    # Drop unnecessary columns
+    df.drop(columns=['Start(ET)'], inplace=True)
+    df.drop(columns=['_'], inplace=True)
+    df.drop(columns=['BoxScore'], inplace=True)
+
+    return df
+
+# Define function to clean and format dataframes
+def clean_and_format_dataframe_team_splits(df):
+    # Convert columns to appropriate data types
+    df['Games'] = pd.to_numeric(df['Games'], errors='coerce')
+    df['Wins'] = pd.to_numeric(df['Wins'], errors='coerce')
+    df['Losses'] = pd.to_numeric(df['Losses'], errors='coerce')
+    df['FieldGoals'] = pd.to_numeric(df['FieldGoals'], errors='coerce')
+    df['FieldGoalAttempts'] = pd.to_numeric(df['FieldGoalAttempts'], errors='coerce')
+    df['ThreePoints'] = pd.to_numeric(df['ThreePoints'], errors='coerce')
+    df['ThreePointAttempts'] = pd.to_numeric(df['ThreePointAttempts'], errors='coerce')
+    df['FreeThrows'] = pd.to_numeric(df['FreeThrows'], errors='coerce')
+    df['FreeThrowAttempts'] = pd.to_numeric(df['FreeThrowAttempts'], errors='coerce')
+    df['OffensiveRebounds'] = pd.to_numeric(df['OffensiveRebounds'], errors='coerce')
+    df['TotalRebounds'] = pd.to_numeric(df['TotalRebounds'], errors='coerce')
+    df['Assists'] = pd.to_numeric(df['Assists'], errors='coerce')
+    df['Steals'] = pd.to_numeric(df['Steals'], errors='coerce')
+    df['Blocks'] = pd.to_numeric(df['Blocks'], errors='coerce')
+    df['Turnovers'] = pd.to_numeric(df['Turnovers'], errors='coerce')
+    df['PersonalFouls'] = pd.to_numeric(df['PersonalFouls'], errors='coerce')
+    df['Points'] = pd.to_numeric(df['Points'], errors='coerce')
+    df['FieldGoalPercent'] = pd.to_numeric(df['FieldGoalPercent'], errors='coerce')
+    df['ThreePointPercent'] = pd.to_numeric(df['ThreePointPercent'], errors='coerce')
+    df['EffectiveFieldGoalPercent'] = pd.to_numeric(df['EffectiveFieldGoalPercent'], errors='coerce')
+    df['FreeThrowPercent'] = pd.to_numeric(df['FreeThrowPercent'], errors='coerce')
+    df['TSPercent'] = pd.to_numeric(df['TSPercent'], errors='coerce')
+    df['OppFieldGoals'] = pd.to_numeric(df['OppFieldGoals'], errors='coerce')
+    df['OppFieldGoalAttempts'] = pd.to_numeric(df['OppFieldGoalAttempts'], errors='coerce')
+    df['OppThreePoints'] = pd.to_numeric(df['OppThreePoints'], errors='coerce')
+    df['OppThreePointAttempts'] = pd.to_numeric(df['OppThreePointAttempts'], errors='coerce')
+    df['OppFreeThrows'] = pd.to_numeric(df['OppFreeThrows'], errors='coerce')
+    df['OppFreeThrowAttempts'] = pd.to_numeric(df['OppFreeThrowAttempts'], errors='coerce')
+    df['OppOffensiveRebounds'] = pd.to_numeric(df['OppOffensiveRebounds'], errors='coerce')
+    df['OppTotalRebounds'] = pd.to_numeric(df['OppTotalRebounds'], errors='coerce')
+    df['OppAssists'] = pd.to_numeric(df['OppAssists'], errors='coerce')
+    df['OppSteals'] = pd.to_numeric(df['OppSteals'], errors='coerce')
+    df['OppBlocks'] = pd.to_numeric(df['OppBlocks'], errors='coerce')
+    df['OppTurnovers'] = pd.to_numeric(df['OppTurnovers'], errors='coerce')
+    df['OppPersonalFouls'] = pd.to_numeric(df['OppPersonalFouls'], errors='coerce')
+    df['OppPoints'] = pd.to_numeric(df['OppPoints'], errors='coerce')
+    df['OppFieldGoalPercent'] = pd.to_numeric(df['OppFieldGoalPercent'], errors='coerce')
+    df['OppThreePointPercent'] = pd.to_numeric(df['OppThreePointPercent'], errors='coerce')
+    df['OppFreeThrowPercent'] = pd.to_numeric(df['OppFreeThrowPercent'], errors='coerce')
+    df['OppTSPercent'] = pd.to_numeric(df['OppTSPercent'], errors='coerce')
+
+    # Clean strings: Remove leading and trailing whitespaces
+    df['Value'] = df['Value'].str.strip()
+
+    # Convert string columns to lowercase
+    df['Value'] = df['Value'].str.lower()
+
+    return df
+
+# Define function to clean and format dataframes
+def clean_and_format_dataframe_tgl_basic(df):
+    # Convert columns to appropriate data types
+    df['Date'] = pd.to_datetime(df['Date'])
+    df['Points'] = pd.to_numeric(df['Points'], errors='coerce')
+    df['OppPoints'] = pd.to_numeric(df['OppPoints'], errors='coerce')
+    df['FieldGoals'] = pd.to_numeric(df['FieldGoals'], errors='coerce')
+    df['FieldGoalAttempts'] = pd.to_numeric(df['FieldGoalAttempts'], errors='coerce')
+    df['FieldGoalPercent'] = pd.to_numeric(df['FieldGoalPercent'], errors='coerce')
+    df['ThreePoints'] = pd.to_numeric(df['ThreePoints'], errors='coerce')
+    df['ThreePointAttempts'] = pd.to_numeric(df['ThreePointAttempts'], errors='coerce')
+    df['ThreePointPercent'] = pd.to_numeric(df['ThreePointPercent'], errors='coerce')
+    df['FreeThrows'] = pd.to_numeric(df['FreeThrows'], errors='coerce')
+    df['FreeThrowAttempts'] = pd.to_numeric(df['FreeThrowAttempts'], errors='coerce')
+    df['FreeThrowPercent'] = pd.to_numeric(df['FreeThrowPercent'], errors='coerce')
+    df['OffensiveRebounds'] = pd.to_numeric(df['OffensiveRebounds'], errors='coerce')
+    df['TotalRebounds'] = pd.to_numeric(df['TotalRebounds'], errors='coerce')
+    df['Assists'] = pd.to_numeric(df['Assists'], errors='coerce')
+    df['Steals'] = pd.to_numeric(df['Steals'], errors='coerce')
+    df['Blocks'] = pd.to_numeric(df['Blocks'], errors='coerce')
+    df['Turnovers'] = pd.to_numeric(df['Turnovers'], errors='coerce')
+    df['PersonalFouls'] = pd.to_numeric(df['PersonalFouls'], errors='coerce')
+    df['OppFieldGoals'] = pd.to_numeric(df['OppFieldGoals'], errors='coerce')
+    df['OppFieldGoalAttempts'] = pd.to_numeric(df['OppFieldGoalAttempts'], errors='coerce')
+    df['OppFieldGoalPercent'] = pd.to_numeric(df['OppFieldGoalPercent'], errors='coerce')
+    df['OppThreePoints'] = pd.to_numeric(df['OppThreePoints'], errors='coerce')
+    df['OppThreePointAttempts'] = pd.to_numeric(df['OppThreePointAttempts'], errors='coerce')
+    df['OppThreePointPercent'] = pd.to_numeric(df['OppThreePointPercent'], errors='coerce')
+    df['OppFreeThrows'] = pd.to_numeric(df['OppFreeThrows'], errors='coerce')
+    df['OppFreeThrowAttempts'] = pd.to_numeric(df['OppFreeThrowAttempts'], errors='coerce')
+    df['OppFreeThrowPercent'] = pd.to_numeric(df['OppFreeThrowPercent'], errors='coerce')
+    df['OppOffensiveRebounds'] = pd.to_numeric(df['OppOffensiveRebounds'], errors='coerce')
+    df['OppTotalRebounds'] = pd.to_numeric(df['OppTotalRebounds'], errors='coerce')
+    df['OppAssists'] = pd.to_numeric(df['OppAssists'], errors='coerce')
+    df['OppSteals'] = pd.to_numeric(df['OppSteals'], errors='coerce')
+    df['OppBlocks'] = pd.to_numeric(df['OppBlocks'], errors='coerce')
+    df['OppTurnovers'] = pd.to_numeric(df['OppTurnovers'], errors='coerce')
+    df['OppPersonalFouls'] = pd.to_numeric(df['OppPersonalFouls'], errors='coerce')
+
+    # Clean strings: Remove leading and trailing whitespaces
+    df['Opp'] = df['Opp'].str.strip()
+
+    # Convert string columns to lowercase
+    df['Opp'] = df['Opp'].str.lower()
+
+    # Drop unnecessary columns
+    df.drop(columns=['_1'], inplace=True)
+    df.drop(columns=['HomeAway'], inplace=True)
+    df.drop(columns=['_2'], inplace=True)
+
+    return df
+
+# Define function to clean and format dataframes
+def clean_and_format_dataframe_games(df):
+    # Convert columns to appropriate data types
+    df['Date'] = pd.to_datetime(df['Date'])
+    df['Points'] = pd.to_numeric(df['Points'], errors='coerce')
+    df['OppPoints'] = pd.to_numeric(df['OppPoints'], errors='coerce')
+
+    # Clean strings: Remove leading and trailing whitespaces
+    df['Opponent'] = df['Opponent'].str.strip()
+    df['Overtime'] = df['Overtime'].str.strip()
+
+    # Convert string columns to lowercase
+    df['Opponent'] = df['Opponent'].str.lower()
+    df['Overtime'] = df['Overtime'].str.lower()
+
+    # Drop unnecessary columns
+    df.drop(columns=['_'], inplace=True)
+    df.drop(columns=['Start(ET)'], inplace=True)
+    df.drop(columns=['BoxScore'], inplace=True)
+    df.drop(columns=['Wins'], inplace=True)
+    df.drop(columns=['Losses'], inplace=True)
+    df.drop(columns=['Streak'], inplace=True)
+    df.drop(columns=['Notes'], inplace=True)
+
+    return df
+
+# Maximum number of threads to use for scraping
+max_workers = 5  # Adjust as needed
+
+# Create a ThreadPoolExecutor instance
+with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+    # Submit scraping tasks for each team URL
+    scraping_tasks = {executor.submit(scrape_team_data, url, team_name, table_ids): (team_name, url) for team_name, url in team_url.items()}
+    # Iterate over completed tasks and get the results
+    for future in concurrent.futures.as_completed(scraping_tasks):
+        team_name, url = scraping_tasks[future]
+        try:
+            # Get the result of the scraping task
+            result = future.result()
+            print(result)
+        except Exception as e:
+            print(f"Failed to scrape data for {team_name}: {e}")
+
+# After scraping for all teams, write the dataframes to Excel files
+def write_dataframes_to_excel(team_data, team_name):
+    try:
+        excel_file_path = os.path.join(excel_directory, f"{team_name}_data.xlsx")
+
+        # Check if the file exists
+        if os.path.isfile(excel_file_path):
+            # Open the existing Excel file
+            with pd.ExcelWriter(excel_file_path, engine='openpyxl', mode='a') as writer:
+                for table_id, table_df in team_data.items():
+                    if table_df is not None:
+                        # Check if the sheet exists and replace it if it does
+                        if table_id in writer.book.sheetnames:
+                            writer.book.remove(writer.book[table_id])
+                        sheet_name = f"{table_id}"
+                        table_df.to_excel(writer, sheet_name=sheet_name, index=False)
+        else:
+            # Create a new Excel file using xlsxwriter engine
+            with pd.ExcelWriter(excel_file_path, engine='xlsxwriter', mode='w') as writer:
+                for table_id, table_df in team_data.items():
+                    if table_df is not None:
+                        sheet_name = f"{table_id}"
+                        table_df.to_excel(writer, sheet_name=sheet_name, index=False)
+        print(f"Appended data to sheets for {team_name}")
+    except Exception as e:
+        logging.error(f"Error writing data to sheets for team {team_name}: {e}")
+
+# Loop through each starting URL template and scrape data for each team
+for category, url_template in page_url_template.items():
+    try:
+        # Loop through each team and scrape data for the specific category
+        for team, team_url_value in team_url.items():  # Changed variable name to avoid conflict
+            try:
+                # Construct the URL for the specific category
+                url = url_template.format(start=start_url, link=team)
+
+                # Scrape data for the team and specific category
+                team_data = scrape_team_data(url, team, table_ids[category])
+
+                if team_data:
+                    # After scraping for all teams, write the dataframes to Excel files
+                    write_dataframes_to_excel(team_data, team)
+
+            except Exception as e:
+                logging.error(f"Error processing team '{team}' for category '{category}': {e}")
+                continue
+
+    except Exception as e:
+        logging.error(f"Error processing category '{category}': {e}")
+        continue
+
+# Close the webdriver
+driver.quit()
