@@ -1,0 +1,66 @@
+# NBA Data
+-- Retrieve the Total Points Scored by Each Team in a Specific Season
+SELECT 
+Team, 
+SUM(Points) AS TotalPoints
+ FROM 
+ sports-data-419719.NBA.Game_Log
+  WHERE EXTRACT 
+  (YEAR FROM Date) = 2023
+   GROUP BY 
+   Team
+   ORDER BY 
+   TotalPoints DESC;
+
+-- Find the Player with the Highest Free Throw Percentage
+SELECT 
+Player, 
+Team, 
+FreeThrowPercentPerGame
+ FROM 
+ sports-data-419719.NBA.Per_Game
+  WHERE EXTRACT (YEAR FROM Date) = 2023
+   ORDER BY 
+   FreeThrowPercentPerGame DESC;
+
+-- Identify Teams with the Most Wins in Overtime
+SELECT 
+Team, 
+COUNT(*) AS OvertimeWins
+ FROM 
+ sports-data-419719.NBA.Results
+  WHERE 
+  EXTRACT (YEAR FROM Date) = 2023 AND
+  Winloss = "W" AND 
+  Overtime = TRUE
+   GROUP BY 
+   Team
+    ORDER BY 
+    OvertimeWins DESC;
+
+-- Calculate the Average Points Per Game for Each Position
+SELECT 
+Position, 
+AVG(PointsPerGame) AS AvgPoints
+ FROM 
+ sports-data-419719.NBA.Per_Game
+  WHERE EXTRACT(YEAR FROM Date) = 2023 AND
+  Position != "none"
+   GROUP BY
+   Position
+    ORDER BY 
+    AvgPoints DESC;
+
+
+-- List the Teams that Have the Most Consistent Starting Lineups
+SELECT 
+Team, 
+COUNT(StartingLineup) AS Startcount, 
+StartingLineup
+ FROM sports-data-419719.NBA.Starting_Lineups
+  WHERE EXTRACT(YEAR FROM Date) = 2023
+   GROUP BY 
+   Team, 
+   StartingLineup
+    ORDER BY 
+    Startcount DESC;
