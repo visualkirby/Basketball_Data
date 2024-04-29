@@ -11,6 +11,8 @@ https://github.com/visualkirby/Basketball_Data/blob/main/Web_Scraping_Code
 
 # Analysis
 ## Google BigQuery - SQL Queries 
+### NBA SQL Queries
+https://github.com/visualkirby/Basketball_Data/blob/main/SQL%20Queries%20
 
 ## Kaggle Notebook - Question: 
 How can an NBA front office use player performance data to make informed decisions and improve team success?
