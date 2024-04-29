@@ -7,4 +7,8 @@ https://github.com/visualkirby/Basketball_Data/blob/main/Web_Scraping_Code
 
 # Tableau Dashboards
 ## Visualization - Tableau Charts & Dashboard
-https://github.com/visualkirby/Basketball_Data/blob/main/Tableau%20Dasboards
+NBA Offensive Totals
+https://public.tableau.com/shared/245GQFZCJ?:display_count=n&:origin=viz_share_link
+
+NBA Defensive Totals 
+https://public.tableau.com/views/NBADefensiveTotals/Dashboard1?:language=en-US&:sid=&:display_count=n&:origin=viz_share_link
