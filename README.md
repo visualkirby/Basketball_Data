@@ -17,9 +17,9 @@ https://github.com/visualkirby/Basketball_Data/blob/main/SQL%20Queries%20
 ## Kaggle Notebook 📓 - Question: 
 How can an NBA front office use player performance data to make informed decisions and improve team success?
 
-## Tableau Sheets - Charts based off SQL queries 📊
+## Tableau Sheets 📊 - Charts based off SQL queries 
 
-# Dashboards
+# Dashboards  📉📊📈
 ## Visualization - Tableau Charts & Dashboard
 NBA Offensive Totals
 https://public.tableau.com/shared/245GQFZCJ?:display_count=n&:origin=viz_share_link
