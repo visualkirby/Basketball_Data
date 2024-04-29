@@ -1,5 +1,6 @@
 # NBA Data
--- Retrieve the Total Points Scored by Each Team in a Specific Season
+
+1 -- Retrieve the Total Points Scored by Each Team in a Specific Season
 SELECT 
 Team, 
 SUM(Points) AS TotalPoints
@@ -12,7 +13,7 @@ SUM(Points) AS TotalPoints
    ORDER BY 
    TotalPoints DESC;
 
--- Find the Player with the Highest Free Throw Percentage
+2 -- Find the Player with the Highest Free Throw Percentage
 SELECT 
 Player, 
 Team, 
@@ -23,7 +24,7 @@ FreeThrowPercentPerGame
    ORDER BY 
    FreeThrowPercentPerGame DESC;
 
--- Identify Teams with the Most Wins in Overtime
+3 -- Identify Teams with the Most Wins in Overtime
 SELECT 
 Team, 
 COUNT(*) AS OvertimeWins
@@ -38,7 +39,7 @@ COUNT(*) AS OvertimeWins
     ORDER BY 
     OvertimeWins DESC;
 
--- Calculate the Average Points Per Game for Each Position
+4 -- Calculate the Average Points Per Game for Each Position
 SELECT 
 Position, 
 AVG(PointsPerGame) AS AvgPoints
@@ -51,8 +52,7 @@ AVG(PointsPerGame) AS AvgPoints
     ORDER BY 
     AvgPoints DESC;
 
-
--- List the Teams that Have the Most Consistent Starting Lineups
+5 -- List the Teams that Have the Most Consistent Starting Lineups
 SELECT 
 Team, 
 COUNT(StartingLineup) AS Startcount, 
