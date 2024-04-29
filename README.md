@@ -1,23 +1,23 @@
-# Basketball Data
-Steps and description of Analyzing Basketball Data from start to finish. (Python, R, SQL, Tableau)
+# Basketball Data 🏀
+## Steps and description of Analyzing Basketball Data from start to finish. (Python, R, SQL, Tableau)
 
 # ETL
-## Extract - Python(Web Scrapping Code)
+## Extract - Python(Web Scrapping Code) 💻
 https://github.com/visualkirby/Basketball_Data/blob/main/Web_Scraping_Code
 
-## Transform - RStudio(Data Pre Processing & Cleaning
+## Transform - RStudio(Data Pre Processing & Cleaning 🧹
 
-## Load - Google BigQuery(Data Warehousing & Management)
+## Load - Google BigQuery(Data Warehousing & Management) 🗄
 
 # Analysis
 ## Google BigQuery - SQL Queries 
 ### NBA SQL Queries
 https://github.com/visualkirby/Basketball_Data/blob/main/SQL%20Queries%20
 
-## Kaggle Notebook - Question: 
+## Kaggle Notebook 📓 - Question: 
 How can an NBA front office use player performance data to make informed decisions and improve team success?
 
-## Tableau Sheets - Charts based off SQL queries
+## Tableau Sheets - Charts based off SQL queries 📊
 
 # Dashboards
 ## Visualization - Tableau Charts & Dashboard
