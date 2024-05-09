@@ -6,7 +6,7 @@
 https://github.com/visualkirby/Basketball_Data/blob/main/Web_Scraping_Code
 
 ## Transform - RStudio(Data Pre Processing & Cleaning 🧹
-https://github.com/visualkirby/Basketball_Data/blob/main/DataWarehousingNotebook.pdf
+https://github.com/visualkirby/Basketball_Data/blob/main/DataWarehousingTransform.pdf
 
 ## Load - Google BigQuery(Data Warehousing & Management) 🗄
 
