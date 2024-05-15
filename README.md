@@ -3,7 +3,7 @@
 
 # ETL
 ## Extract - Python(Web Scrapping Code) 💻
-https://github.com/visualkirby/Basketball_Data/blob/main/Web_Scraping_Code
+https://github.com/visualkirby/Basketball_Data/blob/main/DataWarehousingExtract.pdf
 
 ## Transform - RStudio(Data Pre Processing & Cleaning 🧹
 https://github.com/visualkirby/Basketball_Data/blob/main/DataWarehousingTransform.pdf
