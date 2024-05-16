@@ -11,9 +11,8 @@ https://github.com/visualkirby/Basketball_Data/blob/main/DataWarehousingTransfor
 ## Load - Google BigQuery(Data Warehousing & Management) 🗄
 
 # Analysis
-## Google BigQuery - SQL Queries 
-### NBA SQL Queries
-https://github.com/visualkirby/Basketball_Data/blob/main/SQL%20Queries%20
+## NBA SQL Queries
+https://github.com/visualkirby/Basketball_Data/blob/main/NBA_Data_SQL_Queries.PDF
 
 ## Kaggle Notebook 📓 - Question: 
 How can an NBA front office use player performance data to make informed decisions and improve team success?
