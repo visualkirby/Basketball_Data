@@ -20,9 +20,6 @@ How can an NBA front office use player performance data to make informed decisio
 ## Tableau Sheets 📊 - Charts based off SQL queries 
 
 # Dashboards  📉📊📈
-## Visualization - Tableau Charts & Dashboard
-NBA Offensive Totals
-https://public.tableau.com/shared/245GQFZCJ?:display_count=n&:origin=viz_share_link
-
-NBA Defensive Totals 
-https://public.tableau.com/views/NBADefensiveTotals/Dashboard1?:language=en-US&:sid=&:display_count=n&:origin=viz_share_link
+## Visualization - Tableau Charts & Dashboards
+NBA Team Dash
+https://public.tableau.com/views/NBATeamDash/Dashboard1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link
