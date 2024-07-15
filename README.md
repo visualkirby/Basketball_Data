@@ -9,7 +9,7 @@ https://github.com/visualkirby/Basketball_Data/blob/main/DataWarehousingExtract.
 ## Transform - RStudio(Data Pre Processing & Cleaning 🧹
 https://github.com/visualkirby/Basketball_Data/blob/main/DataWarehousingTransform.pdf
 
-## Load - Google BigQuery(Data Warehousing & Management) 🗄
+## Load - Google BigQuery, MySQL, Microsoft Azure SQL & Amazon RDS(Data Warehousing & Management) 🗄
 
 # SQL
 ## MySQL Server Database Setup
