@@ -1,5 +1,5 @@
 # Basketball Data 🏀
-## Steps and description of Analyzing Basketball Data from start to finish. (Python, R, SQL, Tableau) Download the full Dataset here...
+## Steps and description of Analyzing Basketball Data from start to finish. (Python, R, SQL, Tableau) Download the full Dataset here...👇🏿
 https://www.kaggle.com/datasets/sawandikirby/nba-basketball-statistics-and-performance-data
 
 # ETL
