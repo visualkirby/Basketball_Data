@@ -22,7 +22,9 @@ https://github.com/visualkirby/Basketball_Data/blob/main/NBA_Data_SQL_Queries.PD
 ## Kaggle Notebook 📓 - Question: 
 How can an NBA front office use player performance data to make informed decisions and improve team success?
 
-# Dashboards  📉📊📈
-## Visualization - Tableau Charts & Dashboards
+# Visualization  📉📊📈
+## Tableau 
 NBA Team Dash
 https://public.tableau.com/views/NBATeamDash/Dashboard1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link
+## Power BI
+NBA Team Dashboard
