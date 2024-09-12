@@ -28,3 +28,4 @@ NBA Team Dash
 https://public.tableau.com/views/NBATeamDash/Dashboard1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link
 ## Power BI
 NBA Team Dashboard
+https://github.com/visualkirby/Basketball_Data/blob/main/Power_BI_Video_Example.pptx
