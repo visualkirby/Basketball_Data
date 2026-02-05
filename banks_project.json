@@ -6,7 +6,27 @@
   "short_summary": "Curated basketball datasets with exploratory analysis for analytics and BI use cases",
   "summary": "Dataset-focused analytics project providing structured basketball data for historical analysis, dashboarding, and modeling. The repository emphasizes clean, reusable datasets with supporting exploratory analysis and examples suitable for SQL, Python, and BI tools.",
 
-  "role_scope": "base|operations|supply_chain",
+  "role_scope": "base|operations|supply_chain|customer_service",
+
+  "role_name": [
+    "Data Analyst",
+    "BI Engineer",
+    "Data Engineer",
+    "Automation Developer",
+    "Dashboard Designer",
+    "SQL Developer",
+    "Portfolio Designer",
+    "Decision Strategist",
+    "BI Visualization Developer",
+    "Customer Service Representative",
+    "Customer Service Coordinator",
+    "Dispatch Coordinator",
+    "Operations Coordinator",
+    "Field Service Coordinator",
+    "Logistics Coordinator",
+    "Supply Chain Analyst",
+    "Operations Analyst"
+  ],
 
   "skills": [
     "Python",
@@ -45,35 +65,52 @@
 
   "components": [
     {
-      "component_id": "COMP_BASKETBALL_RAW_DATA",
-      "name": "Raw Basketball Datasets",
-      "component_type": "extract_layer",
+      "component_id": "COMP_SCRAPED_BASKETBALL_DATA",
+      "name": "Scraped Basketball Datasets",
+      "component_type": "data_set",
       "deliverable_type": "dataset",
       "objective": "Provide raw basketball data suitable for cleaning and downstream analytics",
       "business_value": "Establishes a reproducible source of basketball data for analysis and BI projects",
-      "files": [
-        "*.csv"
-      ],
+      "component_link": "https://www.kaggle.com/datasets/sawandikirby/nba-basketball-statistics-and-performance-data",
+      "files": ["NBA Basketball Statistics and Performance Data CSVs"],
       "tools": [
-        { "tool_label": "CSV", "tool_keyword": "csv" }
+        { "tool_label": "Kaggle", "tool_keyword": "kaggle" }
       ],
       "skills": [
-        { "skill_keyword": "data_sourcing", "weight": 0.5 }
+        { "skill_keyword": "data_warehousing", "weight": 0.5 }
       ]
     },
 
     {
-      "component_id": "COMP_BASKETBALL_CLEANED_DATA",
-      "name": "Cleaned Analytical Datasets",
-      "component_type": "transform_layer",
-      "deliverable_type": "dataset",
+      "component_id": "COMP_DATA_WAREHOUSING_EXTRACT",
+      "name": "Data Warehousing Extract",
+      "component_type": "extract_layer",
+      "deliverable_type": "pdf",
+      "objective": "Extract and house basketball datasets for analysis",
+      "business_value": "Provides knowledge of extraction and data warehousing for analytics and modeling",
+      "component_link": "https://github.com/visualkirby/Basketball_Data/blob/main/DataWarehousingExtract.pdf",
+      "files": ["DataWarehousingExtract.pdf"],
+      "tools": [
+        { "tool_label": "Python", "tool_keyword": "python" },
+        { "tool_label": "PyCharm", "tool_keyword": "pycharm" }
+      ],
+      "skills": [
+        { "skill_keyword": "data_sourcing", "weight": 0.5 },
+        { "skill_keyword": "data_extraction", "weight": 0.5 }
+      ]
+    },
+
+    {
+      "component_id": "COMP_DATA_WAREHOUSING_TRANSFORM",
+      "name": "Data Warehousing Transform",
+      "component_type": "trasnform_layer",
+      "deliverable_type": "pdf",
       "objective": "Clean, normalize, and structure basketball datasets for analysis",
       "business_value": "Improves usability and reliability of data for analytics and modeling",
-      "files": [
-        "*clean*.csv"
-      ],
+      "component_link": "https://github.com/visualkirby/Basketball_Data/blob/main/DataWarehousingTransform.pdf",
+      "files": ["DataWarehousingTransform.pdf"],
       "tools": [
-        { "tool_label": "Python", "tool_keyword": "python" }
+        { "tool_label": "R Programming", "tool_keyword": "r programming" }
       ],
       "skills": [
         { "skill_keyword": "data_cleaning", "weight": 0.5 },
@@ -82,21 +119,93 @@
     },
 
     {
-      "component_id": "COMP_BASKETBALL_EDA",
-      "name": "Exploratory Data Analysis",
-      "component_type": "analytics_layer",
-      "deliverable_type": "analytical_case_study",
+      "component_id": "COMP_BASKETBALL_LOAD",
+      "name": "Data Warehousing Load",
+      "component_type": "load_and_model",
+      "deliverable_type": "analytical_queries_and_insights",
       "objective": "Explore basketball trends and patterns through analysis and visualization",
       "business_value": "Demonstrates analytical thinking and domain understanding using real sports data",
-      "files": [
-        "*.ipynb"
-      ],
+      "component_link": "https://github.com/visualkirby/Basketball_Data/blob/main/DataWarehousingLoad.pdf",
+      "files": ["DataWarehousingLoad.pdf"],
       "tools": [
         { "tool_label": "Python", "tool_keyword": "python" },
         { "tool_label": "Jupyter", "tool_keyword": "jupyter" }
       ],
       "skills": [
         { "skill_keyword": "exploratory_data_analysis", "weight": 0.6 }
+      ]
+    },
+    
+    {
+      "component_id": "COMP_BASKETBALL_SQL_ANALYSIS",
+      "name": "SQL Queries",
+      "component_type": "analytics_layer",
+      "deliverable_type": "pdf",
+      "objective": "Explore basketball trends and patterns through SQL Queries",
+      "business_value": "Demonstrates analytical thinking and domain understanding using real sports data",
+      "component_link": "https://github.com/visualkirby/Basketball_Data/blob/main/NBA_Data_SQL_Queries.PDF",
+      "files": ["NBA_Data_SQL_Queries.PDF"],
+      "tools": [
+        { "tool_label": "Google", "tool_keyword": "google" },
+        { "tool_label": "BigQuery", "tool_keyword": "bigquery" }
+      ],
+      "skills": [
+        { "skill_keyword": "exploratory_data_analysis", "weight": 0.6 }
+      ]
+    },
+
+    {
+      "component_id": "COMP_BASKETBALL_TABLEAU_DASHBOARD",
+      "name": "NBA Tableau Dashboard",
+      "component_type": "data_visualization",
+      "deliverable_type": "dashboard",
+      "objective": "Explore basketball trends and patterns through SQL Queries",
+      "business_value": "Demonstrates analytical thinking and domain understanding using real sports data",
+      "component_link": "https://public.tableau.com/app/profile/sawandi.kirby/viz/NBATeamDash/Dashboard1",
+      "files": ["NBA Team Dash"],
+      "tools": [
+        { "tool_label": "Tableau", "tool_keyword": "tableau" },
+        { "tool_label": "Dashboard", "tool_keyword": "dashboard" }
+      ],
+      "skills": [
+        { "skill_keyword": "data visualization", "weight": 0.6 }
+      ]
+    },
+
+    {
+      "component_id": "COMP_BASKETBALL_POWER_BI_PDF",
+      "name": "NBA Power BI Dashboard PDF",
+      "component_type": "data_visualization",
+      "deliverable_type": "pdf",
+      "objective": "Explore basketball trends and patterns through SQL Queries",
+      "business_value": "Demonstrates analytical thinking and domain understanding using real sports data",
+      "component_link": "https://github.com/visualkirby/Basketball_Data/blob/main/Power%20BI%20NBA%20Team%20Dashboard.pdf",
+      "files": ["Power BI NBA Team Dashboard.pdf"],
+      "tools": [
+        { "tool_label": "Power BI", "tool_keyword": "power bi" },
+        { "tool_label": "Dashboard", "tool_keyword": "dashboard" }
+      ],
+      "skills": [
+        { "skill_keyword": "data visualization", "weight": 0.6 }
+      ]
+    },
+
+    {
+      "component_id": "COMP_BASKETBALL_POWER_BI_POWERPOINT",
+      "name": "NBA Power BI Dashboard PowerPoint",
+      "component_type": "data_visualization",
+      "deliverable_type": "pptx",
+      "objective": "Explore basketball trends and patterns through SQL Queries",
+      "business_value": "Demonstrates analytical thinking and domain understanding using real sports data",
+      "component_link": "https://github.com/visualkirby/Basketball_Data/blob/main/Power_BI_Video_Example.pptx",
+      "files": ["Power_BI_Video_Example.pptx"],
+      "tools": [
+        { "tool_label": "Power BI", "tool_keyword": "power bi" },
+        { "tool_label": "Dashboard", "tool_keyword": "dashboard" },
+        { "tool_label": "PowerPoint", "tool_keyword": "powerpoint" }
+      ],
+      "skills": [
+        { "skill_keyword": "data visualization", "weight": 0.6 }
       ]
     }
   ]
