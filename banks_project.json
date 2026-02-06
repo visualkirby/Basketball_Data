@@ -8,26 +8,6 @@
 
   "role_scope": "base|operations|supply_chain|customer_service",
 
-  "role_name": [
-    "Data Analyst",
-    "BI Engineer",
-    "Data Engineer",
-    "Automation Developer",
-    "Dashboard Designer",
-    "SQL Developer",
-    "Portfolio Designer",
-    "Decision Strategist",
-    "BI Visualization Developer",
-    "Customer Service Representative",
-    "Customer Service Coordinator",
-    "Dispatch Coordinator",
-    "Operations Coordinator",
-    "Field Service Coordinator",
-    "Logistics Coordinator",
-    "Supply Chain Analyst",
-    "Operations Analyst"
-  ],
-
   "skills": [
     "Python",
     "SQL",
