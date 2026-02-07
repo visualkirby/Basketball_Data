@@ -102,7 +102,7 @@
       "component_id": "COMP_BASKETBALL_LOAD",
       "name": "Data Warehousing Load",
       "component_type": "load_and_model",
-      "deliverable_type": "analytical_queries_and_insights",
+      "deliverable_type": "pdf",
       "objective": "Explore basketball trends and patterns through analysis and visualization",
       "business_value": "Demonstrates analytical thinking and domain understanding using real sports data",
       "component_link": "https://github.com/visualkirby/Basketball_Data/blob/main/DataWarehousingLoad.pdf",
