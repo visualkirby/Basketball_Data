@@ -47,17 +47,17 @@
     {
       "component_id": "COMP_SCRAPED_BASKETBALL_DATA",
       "name": "Scraped Basketball Datasets",
-      "component_type": "data_set",
+      "component_type": "extract_layer",
       "deliverable_type": "dataset",
-      "objective": "Provide raw basketball data suitable for cleaning and downstream analytics",
-      "business_value": "Establishes a reproducible source of basketball data for analysis and BI projects",
+      "objective": "Collect and publish raw basketball datasets in a consistent, reusable format for cleaning, analysis, and BI consumption.",
+      "business_value": "Creates a reliable starting point for downstream analytics (EDA, dashboards, modeling) and enables repeatable sports analysis without re-scraping/rebuilding data.",
       "component_link": "https://www.kaggle.com/datasets/sawandikirby/nba-basketball-statistics-and-performance-data",
       "files": ["NBA Basketball Statistics and Performance Data CSVs"],
       "tools": [
         { "tool_label": "Kaggle", "tool_keyword": "kaggle" }
       ],
       "skills": [
-        { "skill_keyword": "data_warehousing", "weight": 0.5 }
+        { "skill_label": "Data Warehousing", "skill_keyword": "data_warehousing", "weight": 0.5 }
       ]
     },
 
@@ -66,8 +66,8 @@
       "name": "Data Warehousing Extract",
       "component_type": "extract_layer",
       "deliverable_type": "pdf",
-      "objective": "Extract and house basketball datasets for analysis",
-      "business_value": "Provides knowledge of extraction and data warehousing for analytics and modeling",
+      "objective": "Extract basketball data from source files and standardize it into a controlled “landing” structure ready for transformation.",
+      "business_value": "Demonstrates real-world ingestion discipline (schema awareness, storage organization, provenance) that reduces downstream rework and improves reproducibility.",
       "component_link": "https://github.com/visualkirby/Basketball_Data/blob/main/DataWarehousingExtract.pdf",
       "files": ["DataWarehousingExtract.pdf"],
       "tools": [
@@ -75,26 +75,26 @@
         { "tool_label": "PyCharm", "tool_keyword": "pycharm" }
       ],
       "skills": [
-        { "skill_keyword": "data_sourcing", "weight": 0.5 },
-        { "skill_keyword": "data_extraction", "weight": 0.5 }
+        { "skill_label": "Data Sourcing", "skill_keyword": "data_sourcing", "weight": 0.5 },
+        { "skill_label": "Data Extraction", "skill_keyword": "data_extraction", "weight": 0.5 }
       ]
     },
 
     {
       "component_id": "COMP_DATA_WAREHOUSING_TRANSFORM",
       "name": "Data Warehousing Transform",
-      "component_type": "trasnform_layer",
+      "component_type": "transform_layer",
       "deliverable_type": "pdf",
-      "objective": "Clean, normalize, and structure basketball datasets for analysis",
-      "business_value": "Improves usability and reliability of data for analytics and modeling",
+      "objective": "Clean, normalize, and validate basketball data into analysis-ready tables (types, keys, naming, and consistent grain).",
+      "business_value": "Improves data quality and trust—enabling accurate KPI calculations, faster queries, and stable dashboarding/modeling.",
       "component_link": "https://github.com/visualkirby/Basketball_Data/blob/main/DataWarehousingTransform.pdf",
       "files": ["DataWarehousingTransform.pdf"],
       "tools": [
         { "tool_label": "R Programming", "tool_keyword": "r programming" }
       ],
       "skills": [
-        { "skill_keyword": "data_cleaning", "weight": 0.5 },
-        { "skill_keyword": "data_transformation", "weight": 0.5 }
+        { "skill_label": "Data Cleaning", "skill_keyword": "data_cleaning", "weight": 0.5 },
+        { "skill_label": "Data Transformation", "skill_keyword": "data_transformation", "weight": 0.5 }
       ]
     },
 
@@ -103,8 +103,8 @@
       "name": "Data Warehousing Load",
       "component_type": "load_and_model",
       "deliverable_type": "pdf",
-      "objective": "Explore basketball trends and patterns through analysis and visualization",
-      "business_value": "Demonstrates analytical thinking and domain understanding using real sports data",
+      "objective": "Load curated tables into an analysis/model-friendly structure (relational tables or star-like layout) to support SQL and BI use cases.",
+      "business_value": "Enables scalable querying and reporting by organizing data for performance, joinability, and consistent metric definitions.",
       "component_link": "https://github.com/visualkirby/Basketball_Data/blob/main/DataWarehousingLoad.pdf",
       "files": ["DataWarehousingLoad.pdf"],
       "tools": [
@@ -112,7 +112,7 @@
         { "tool_label": "Jupyter", "tool_keyword": "jupyter" }
       ],
       "skills": [
-        { "skill_keyword": "exploratory_data_analysis", "weight": 0.6 }
+        { "skill_label": "Data Modeling", "skill_keyword": "data_modeling", "weight": 0.6 }
       ]
     },
     
@@ -121,8 +121,8 @@
       "name": "SQL Queries",
       "component_type": "analytics_layer",
       "deliverable_type": "pdf",
-      "objective": "Explore basketball trends and patterns through SQL Queries",
-      "business_value": "Demonstrates analytical thinking and domain understanding using real sports data",
+      "objective": "Answer basketball performance questions using SQL (filters, joins, aggregations, and KPI logic) with reusable query patterns.",
+      "business_value": "Produces decision-ready metrics and demonstrates ability to translate business questions into clear, auditable SQL analysis.",
       "component_link": "https://github.com/visualkirby/Basketball_Data/blob/main/NBA_Data_SQL_Queries.PDF",
       "files": ["NBA_Data_SQL_Queries.PDF"],
       "tools": [
@@ -130,7 +130,7 @@
         { "tool_label": "BigQuery", "tool_keyword": "bigquery" }
       ],
       "skills": [
-        { "skill_keyword": "exploratory_data_analysis", "weight": 0.6 }
+        { "skill_label": "Exploratory Data Analysis", "skill_keyword": "exploratory_data_analysis", "weight": 0.6 }
       ]
     },
 
@@ -139,8 +139,8 @@
       "name": "NBA Tableau Dashboard",
       "component_type": "data_visualization",
       "deliverable_type": "dashboard",
-      "objective": "Explore basketball trends and patterns through SQL Queries",
-      "business_value": "Demonstrates analytical thinking and domain understanding using real sports data",
+      "objective": "Build an interactive Tableau dashboard to explore team/player performance trends and compare KPIs across seasons or groups.",
+      "business_value": "Turns raw stats into stakeholder-friendly insights—enabling fast exploration, pattern detection, and self-serve analysis without writing code.",
       "component_link": "https://public.tableau.com/app/profile/sawandi.kirby/viz/NBATeamDash/Dashboard1",
       "files": ["NBA Team Dash"],
       "tools": [
@@ -148,17 +148,17 @@
         { "tool_label": "Dashboard", "tool_keyword": "dashboard" }
       ],
       "skills": [
-        { "skill_keyword": "data visualization", "weight": 0.6 }
+        { "skill_label": "Data Visualization", "skill_keyword": "data visualization", "weight": 0.6 }
       ]
     },
 
     {
       "component_id": "COMP_BASKETBALL_POWER_BI_PDF",
       "name": "NBA Power BI Dashboard PDF",
-      "component_type": "data_visualization",
+      "component_type": "report",
       "deliverable_type": "pdf",
-      "objective": "Explore basketball trends and patterns through SQL Queries",
-      "business_value": "Demonstrates analytical thinking and domain understanding using real sports data",
+      "objective": "Document Power BI dashboard outputs in a shareable PDF format for review, storytelling, and offline distribution.",
+      "business_value": "Provides a portable “executive snapshot” of insights that can be shared with non-technical audiences and used as a report artifact.",
       "component_link": "https://github.com/visualkirby/Basketball_Data/blob/main/Power%20BI%20NBA%20Team%20Dashboard.pdf",
       "files": ["Power BI NBA Team Dashboard.pdf"],
       "tools": [
@@ -166,17 +166,17 @@
         { "tool_label": "Dashboard", "tool_keyword": "dashboard" }
       ],
       "skills": [
-        { "skill_keyword": "data visualization", "weight": 0.6 }
+        { "skill_label": "Data Visualization", "skill_keyword": "data visualization", "weight": 0.6 }
       ]
     },
 
     {
       "component_id": "COMP_BASKETBALL_POWER_BI_POWERPOINT",
       "name": "NBA Power BI Dashboard PowerPoint",
-      "component_type": "data_visualization",
+      "component_type": "slides_and_video",
       "deliverable_type": "pptx",
-      "objective": "Explore basketball trends and patterns through SQL Queries",
-      "business_value": "Demonstrates analytical thinking and domain understanding using real sports data",
+      "objective": "Package dashboard insights into a presentation-ready format with narrative flow, key findings, and recommended next questions.",
+      "business_value": "Demonstrates stakeholder communication—bridging analytics to action by framing insights clearly for meetings, interviews, or client delivery.",
       "component_link": "https://github.com/visualkirby/Basketball_Data/blob/main/Power_BI_Video_Example.pptx",
       "files": ["Power_BI_Video_Example.pptx"],
       "tools": [
@@ -185,7 +185,7 @@
         { "tool_label": "PowerPoint", "tool_keyword": "powerpoint" }
       ],
       "skills": [
-        { "skill_keyword": "data visualization", "weight": 0.6 }
+        { "skill_label": "Data Visualization", "skill_keyword": "data visualization", "weight": 0.6 }
       ]
     }
   ]
