@@ -82,7 +82,7 @@ This pipeline could help NBA teams:
 **Sawandi Kirby**
 
 Data Analytics & Business Intelligence  
-Benchline Analytics — Freelance data consultancy focused on K-12 schools and medical practices.
+Benchline Analytics - Data intelligence for organizations that mean business.
 
 - GitHub: https://github.com/visualkirby
 - LinkedIn: https://linkedin.com/in/sawandi-kirby
