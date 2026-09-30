@@ -57,8 +57,12 @@ WHERE 3P% > 40 AND salary < 5000000;
 
 ![NBA Team Dashboard](./screenshots/NBA_Team_Dashboard.png)
 
-- Dynamic trade machine simulator  
-- Draft pick value analysis  
+- Team Select and Player Select slicers filter every visual on the page  
+- Roster cards for average height, weight and age  
+- Shooting gauges for field goal, three-point and free throw percentage  
+- Team strength tier and the season win/loss split  
+- Radar chart comparing the top 5 players on points, rebounds, assists, blocks and steals  
+- Maps of foreign-born players' home countries and the colleges players attended  
 
 ---
 
