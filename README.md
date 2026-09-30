@@ -32,10 +32,19 @@
 ### 🛠 **SQL Queries**  
 [![MySQL](https://img.shields.io/badge/View-SQL%20Queries-05467c)](https://github.com/visualkirby/Basketball_Data/blob/main/NBA_Data_SQL_Queries.PDF)  
 ```sql
--- Example: Find undervalued 3PT shooters
-SELECT player_name, 3P%, salary 
-FROM players 
-WHERE 3P% > 40 AND salary < 5000000;
+-- Example: Teams with the most consistent starting lineups (2023)
+SELECT
+  Team,
+  COUNT(StartingLineup) AS Startcount,
+  StartingLineup
+FROM
+  sports-data-419719.NBA.Starting_Lineups
+WHERE EXTRACT(YEAR FROM Date) = 2023
+GROUP BY
+  Team,
+  StartingLineup
+ORDER BY
+  Startcount DESC;
 ```
 
 ### 🔍 **Key Business Question**  
