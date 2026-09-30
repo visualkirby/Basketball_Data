@@ -54,6 +54,9 @@ WHERE 3P% > 40 AND salary < 5000000;
 
 ### **Power BI Report**  
 [![PDF](https://img.shields.io/badge/View-PDF-c78a03)](https://github.com/visualkirby/Basketball_Data/blob/main/Power%20BI%20NBA%20Team%20Dashboard.pdf) | [![Video](https://img.shields.io/badge/Walkthrough-Video-c78a03)](https://github.com/visualkirby/Basketball_Data/blob/main/Power_BI_Video_Example.pptx)  
+
+![NBA Team Dashboard](./screenshots/NBA_Team_Dashboard.png)
+
 - Dynamic trade machine simulator  
 - Draft pick value analysis  
 
