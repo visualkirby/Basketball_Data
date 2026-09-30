@@ -40,17 +40,24 @@ WHERE 3P% > 40 AND salary < 5000000;
 
 ### 🔍 **Key Business Question**  
 *"How can NBA teams leverage analytics for roster construction?"*  
-**Findings:**  
-- **82% correlation** between PIE (Player Impact Estimate) and playoff success  
-- Teams overpay for PPG (+$2.1M/yr) vs. true shooting % (+$800K/yr)  
+**Analysis questions:**  
+- Which starting lineups produce the best results?  
+- How do teams perform against top-tier vs. bottom-tier opponents?  
+- Which players deliver the most production per minute, and who is underused?  
+- How large is each team's home/road gap?  
+- How consistent are teams from game to game?  
 
 ---
 
 ## 📈 **Visualization**  
 ### **Tableau Dashboard**  
 [![Tableau](https://img.shields.io/badge/Interactive-Dashboard-03a6a5)](https://public.tableau.com/views/NBATeamDash/Dashboard1)  
-- Player efficiency radar charts  
-- Team salary cap heatmaps  
+- Team and Player filters, with the selected team's logo as the backdrop  
+- Shooting gauges for 3PT%, FG% and FT%  
+- Points scored and allowed, home vs. away  
+- Roster averages for age, height and weight  
+- Win/loss split, season wins and a strength tier based on win rate  
+- Per-game assists, blocks, points, rebounds and steals  
 
 ### **Power BI Report**  
 [![PDF](https://img.shields.io/badge/View-PDF-c78a03)](https://github.com/visualkirby/Basketball_Data/blob/main/Power%20BI%20NBA%20Team%20Dashboard.pdf) | [![Video](https://img.shields.io/badge/Walkthrough-Video-c78a03)](https://github.com/visualkirby/Basketball_Data/blob/main/Power_BI_Video_Example.pptx)  
